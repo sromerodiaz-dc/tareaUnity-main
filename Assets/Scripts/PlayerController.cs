@@ -13,7 +13,7 @@ public class PlayerController : MonoBehaviour, PlayerControls.IPlayerActions
     public float speed = 10f;  // Velocidad de movimiento.
     public Camera playerCamera;  // Referencia a la cámara para el cálculo de la dirección de movimiento.
 
-    private float count = 0; // Contador para manejar eventos
+    public float count = 0; // Contador para manejar eventos
     public TextMeshProUGUI text;
  
     private void Awake()
@@ -91,6 +91,11 @@ public class PlayerController : MonoBehaviour, PlayerControls.IPlayerActions
     // Detectar las colisiones con los pick-ups
     private void OnTriggerEnter(Collider other)
     {
+        ScoreManager scoreManager = FindObjectOfType<ScoreManager>();
+        if (scoreManager != null)
+        {
+            scoreManager.AumentarPuntos(1); // Suma un punto
+        }
         if (other.CompareTag("PickUp"))  // Si el objeto tiene la etiqueta "PickUp"
         {
             Destroy(other.gameObject);  // Destruir el pick-up al ser recogido.

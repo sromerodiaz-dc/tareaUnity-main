@@ -211,10 +211,22 @@ else if (context.canceled)
 
 ---
 
-## **Resumen del Flujo del Código**
+### **Resumen del Flujo del Código**
 1. **Inicialización**: Se configura la cámara y los controles del jugador.
 2. **Entrada del Jugador**: Se detecta si el jugador presiona una tecla numérica para alternar entre modos.
 3. **Actualización de la Cámara**:
    - Si está en modo tercera persona, se coloca detrás y arriba del jugador mirando hacia él.
    - Si está en modo primera persona, se posiciona en la cabeza del jugador y sigue la rotación del mouse.
 4. **Entrada del Mouse**: En modo primera persona, las rotaciones del mouse actualizan la orientación de la cámara.
+
+## `Portal / Teletransporte`
+
+He implementado dos portales que muestran lo que hay del otro lado del portal. Para esto he tenido que crear: 2 cámaras, 2 colliders, 2 renders textures y 2 materiales.
+
+He hecho uso de diferentes scripts, uno que controla el movimiento de las cámaras para cuadrarlo con la cámara del jugador y por último, otro script que controle el teletransporte de un lugar a otro.
+
+Para que funcione mejor, hay que implementar un shader.
+
+## `GameManager`
+
+## `Enemigos`
