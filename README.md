@@ -237,7 +237,7 @@ Implementar ANIMATOR para los GAME STATES.
 
 </details>
 <details>
-<summary><b>Estructura del proyecto</b></summary>
+<summary><b>Entidades</b></summary>
 
 ## `Enemigos`
 
