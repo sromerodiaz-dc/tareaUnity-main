@@ -227,6 +227,13 @@ He hecho uso de diferentes scripts, uno que controla el movimiento de las cámar
 
 Para que funcione mejor, hay que implementar un shader.
 
-## `GameManager`
+# Estructura del proyecto
+
+Implementar PREFABS, ENEMIGOS (NAVMESH) Y TEXTURAS (ASSETS).
+Implementar ANIMATOR para los GAME STATES.
+
+## `Game States`
+
+## `Game Manager`
 
 ## `Enemigos`

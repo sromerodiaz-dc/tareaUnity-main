@@ -12,26 +12,33 @@ public class PlayerController : MonoBehaviour, PlayerControls.IPlayerActions
 
     public float speed = 10f;  // Velocidad de movimiento.
     public Camera playerCamera;  // Referencia a la cámara para el cálculo de la dirección de movimiento.
+    private int count = 0;
 
-    public float count = 0; // Contador para manejar eventos
     public TextMeshProUGUI text;
+
+    private ScoreManager scoreManager;
  
     private void Awake()
     {
         controls = new PlayerControls();
         controls.Player.SetCallbacks(this);  // Registra los métodos de entrada.
         rb = GetComponent<Rigidbody>();  // Obtén el Rigidbody de la bola.
+
+        scoreManager = FindObjectOfType<ScoreManager>();  
+        
         CountPickUps();
     }
 
     private void OnEnable()
     {
         controls.Player.Enable();  // Habilita las acciones del jugador.
+        ScoreManager.OnPuntuacionActualizada += setCount;
     }
 
     private void OnDisable()
     {
         controls.Player.Disable();  // Deshabilita las acciones del jugador.
+        ScoreManager.OnPuntuacionActualizada -= setCount; // Desuscribirse al evento para evitar errores
     }
 
     // Método llamado cuando se recibe la entrada de movimiento
@@ -63,6 +70,12 @@ public class PlayerController : MonoBehaviour, PlayerControls.IPlayerActions
     public void OnNumberKeys(InputAction.CallbackContext context)
     { }
 
+    void setCount(int pts)
+    {
+        count = pts;
+        CountPickUps();
+    }
+
     private void CountPickUps() {
         text.text = "Points: " + count.ToString();
     }
@@ -91,21 +104,13 @@ public class PlayerController : MonoBehaviour, PlayerControls.IPlayerActions
     // Detectar las colisiones con los pick-ups
     private void OnTriggerEnter(Collider other)
     {
-        ScoreManager scoreManager = FindObjectOfType<ScoreManager>();
-        if (scoreManager != null)
-        {
-            scoreManager.AumentarPuntos(1); // Suma un punto
-        }
         if (other.CompareTag("PickUp"))  // Si el objeto tiene la etiqueta "PickUp"
         {
-            Destroy(other.gameObject);  // Destruir el pick-up al ser recogido.
-            count+=1;        
-            CountPickUps();
-        }
-        else if (other.CompareTag("Hurry"))
-        {
-            Destroy(other.gameObject);
-            StartCoroutine(ApplyTemporaryBoost());  // Aplicar fuerza temporal.
+            Destroy(other.gameObject);  // Destruir el pick-up al ser recogido.      
+            if (scoreManager != null)
+            {
+                scoreManager.AumentarPuntos(1); // Suma un punto
+            }
         }
     }
 

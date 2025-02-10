@@ -8,6 +8,7 @@ public class TransportPlayer : MonoBehaviour
     {
         if (other.CompareTag("Player")) // Asegúrate de que el GameObject del jugador tiene la etiqueta "Player".
         {
+            Debug.Log("Respawn");
             other.transform.position = targetPosition; // Transporta al jugador.
             other.GetComponent<Rigidbody>().velocity = Vector3.zero; // Reinicia la velocidad para evitar deslizamientos.
         }
