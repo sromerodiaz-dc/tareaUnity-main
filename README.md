@@ -4,6 +4,9 @@
 
 El código representa diferentes scripts para el control de GameObjects como Player, Camera o PickUps. Se emplean métodos para el manejo de ìnputs de usuario mediante el input system de Unity y se emplean para tener dos cámaras perfectamente funcionales manteniendo el movimiento WASD ligado al tipo de cámara empleado.
 
+<details>
+<summary><b>Explicación del movimiento del jugador</b></summary>
+
 ## `PlayerController`
 
 Control del jugador. Encargado del *movimiento* en función del tradicional *WASD* y de la interacción con `colisionables` del mapa.
@@ -98,6 +101,10 @@ rb.AddForce(movement, ForceMode.Force);
   - Presionar `W` y `D` juntos mueve al objeto en diagonal (noreste).
 
 Todo esto hace que el objeto se mueva de manera natural en relación con la cámara, incluso si el jugador rota la cámara.
+
+</details>
+<details>
+<summary><b>¿Cómo se manejan las cámaras?</b></summary>
 
 ## `CameraController`
 
@@ -219,6 +226,25 @@ else if (context.canceled)
    - Si está en modo primera persona, se posiciona en la cabeza del jugador y sigue la rotación del mouse.
 4. **Entrada del Mouse**: En modo primera persona, las rotaciones del mouse actualizan la orientación de la cámara.
 
+</details>
+<details>
+<summary><b>Estructura del proyecto</b></summary>
+
+# Estructura del proyecto
+
+Implementar PREFABS, ENEMIGOS (NAVMESH) Y TEXTURAS (ASSETS).
+Implementar ANIMATOR para los GAME STATES.
+
+</details>
+<details>
+<summary><b>Estructura del proyecto</b></summary>
+
+## `Enemigos`
+
+</details>
+<details>
+<summary><b>Estructuras moviles</b></summary>
+
 ## `Portal / Teletransporte`
 
 He implementado dos portales que muestran lo que hay del otro lado del portal. Para esto he tenido que crear: 2 cámaras, 2 colliders, 2 renders textures y 2 materiales.
@@ -227,13 +253,15 @@ He hecho uso de diferentes scripts, uno que controla el movimiento de las cámar
 
 Para que funcione mejor, hay que implementar un shader.
 
-# Estructura del proyecto
 
-Implementar PREFABS, ENEMIGOS (NAVMESH) Y TEXTURAS (ASSETS).
-Implementar ANIMATOR para los GAME STATES.
+</details>
+<details>
+<summary><b>Controladores</b></summary>
+
+Game States (Script y Animator), Score Manager, Portal Trigger (Animaciones) y GameManager (GameObject)
 
 ## `Game States`
 
 ## `Game Manager`
 
-## `Enemigos`
+</details>
