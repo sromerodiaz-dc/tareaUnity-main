@@ -11,17 +11,17 @@ public class SpherePortalController : MonoBehaviour
 
     void Start()
     {
-        transform.localScale = tamañoInicial;  // Mantener invisible al inicio
+        transform.localScale = tamañoInicial;  // Mantener invisible al inicio  
     }
 
     private void OnEnable()
     {
-        ScoreManager.OnSeisPuntos += ActivarEsfera;
+        ScoreEventsManager.OnPortalTrigger += ActivarEsfera;
     }
 
     private void OnDisable()
     {
-        ScoreManager.OnSeisPuntos -= ActivarEsfera;
+        ScoreEventsManager.OnPortalTrigger -= ActivarEsfera;
     }
 
     public void ActivarEsfera()

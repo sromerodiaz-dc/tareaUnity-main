@@ -12,7 +12,7 @@ Material:
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
-  - _SUNDISK_HIGH_QUALITY
+  - _SUNDISK_SIMPLE
   m_InvalidKeywords:
   - _ALPHABLEND_ON
   - _MAPPING_LATITUDE_LONGITUDE_LAYOUT
@@ -129,7 +129,7 @@ Material:
     - _SoftParticlesNearFadeDistance: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 5
-    - _SunDisk: 2
+    - _SunDisk: 1
     - _SunSize: 0.123
     - _SunSizeConvergence: 5.29
     - _UVSec: 0

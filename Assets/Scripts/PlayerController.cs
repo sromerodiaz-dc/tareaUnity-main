@@ -12,11 +12,10 @@ public class PlayerController : MonoBehaviour, PlayerControls.IPlayerActions
 
     public float speed = 10f;  // Velocidad de movimiento.
     public Camera playerCamera;  // Referencia a la cámara para el cálculo de la dirección de movimiento.
-    private int count = 0;
 
     public TextMeshProUGUI text;
 
-    private ScoreManager scoreManager;
+    private ScoreEventsManager scoreManager;
  
     private void Awake()
     {
@@ -24,21 +23,21 @@ public class PlayerController : MonoBehaviour, PlayerControls.IPlayerActions
         controls.Player.SetCallbacks(this);  // Registra los métodos de entrada.
         rb = GetComponent<Rigidbody>();  // Obtén el Rigidbody de la bola.
 
-        scoreManager = FindObjectOfType<ScoreManager>();  
+        scoreManager = FindObjectOfType<ScoreEventsManager>();  
         
-        CountPickUps();
+        setCount(0);
     }
 
     private void OnEnable()
     {
         controls.Player.Enable();  // Habilita las acciones del jugador.
-        ScoreManager.OnPuntuacionActualizada += setCount;
+        ScoreEventsManager.OnPuntuacionActualizada += setCount;
     }
 
     private void OnDisable()
     {
         controls.Player.Disable();  // Deshabilita las acciones del jugador.
-        ScoreManager.OnPuntuacionActualizada -= setCount; // Desuscribirse al evento para evitar errores
+        ScoreEventsManager.OnPuntuacionActualizada -= setCount; // Desuscribirse al evento para evitar errores
     }
 
     // Método llamado cuando se recibe la entrada de movimiento
@@ -72,12 +71,7 @@ public class PlayerController : MonoBehaviour, PlayerControls.IPlayerActions
 
     void setCount(int pts)
     {
-        count = pts;
-        CountPickUps();
-    }
-
-    private void CountPickUps() {
-        text.text = "Points: " + count.ToString();
+        text.text = "Points: " + pts.ToString();
     }
 
     private void FixedUpdate()
@@ -106,10 +100,12 @@ public class PlayerController : MonoBehaviour, PlayerControls.IPlayerActions
     {
         if (other.CompareTag("PickUp"))  // Si el objeto tiene la etiqueta "PickUp"
         {
+            string tag = other.gameObject.tag;
+
             Destroy(other.gameObject);  // Destruir el pick-up al ser recogido.      
             if (scoreManager != null)
             {
-                scoreManager.AumentarPuntos(1); // Suma un punto
+                scoreManager.AumentarPuntos(tag); // Suma un punto
             }
         }
     }
