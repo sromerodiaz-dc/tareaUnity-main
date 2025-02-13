@@ -5,8 +5,8 @@ TagManager:
   serializedVersion: 2
   tags:
   - PickUp
-  - Hurry
-  - NextLvl
+  - OnEnemyZone
+  - PortalPts
   layers:
   - Default
   - TransparentFX

@@ -32,12 +32,14 @@ public class PlayerController : MonoBehaviour, PlayerControls.IPlayerActions
     {
         controls.Player.Enable();  // Habilita las acciones del jugador.
         ScoreEventsManager.OnPuntuacionActualizada += setCount;
+        ScoreEventsManager.OnEnemyZone += setPortalCount;
     }
 
     private void OnDisable()
     {
         controls.Player.Disable();  // Deshabilita las acciones del jugador.
         ScoreEventsManager.OnPuntuacionActualizada -= setCount; // Desuscribirse al evento para evitar errores
+        ScoreEventsManager.OnEnemyZone -= setPortalCount;
     }
 
     // Método llamado cuando se recibe la entrada de movimiento
@@ -71,7 +73,12 @@ public class PlayerController : MonoBehaviour, PlayerControls.IPlayerActions
 
     void setCount(int pts)
     {
-        text.text = "Points: " + pts.ToString();
+        text.text = "Monedas joseadas: " + pts.ToString();
+    }
+
+    void setPortalCount(int pts)
+    {
+        text.text = "Puntos restantes: " + pts.ToString();
     }
 
     private void FixedUpdate()
@@ -98,17 +105,20 @@ public class PlayerController : MonoBehaviour, PlayerControls.IPlayerActions
     // Detectar las colisiones con los pick-ups
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("PickUp"))  // Si el objeto tiene la etiqueta "PickUp"
-        {
-            string tag = other.gameObject.tag;
+        string tag = other.gameObject.tag;
 
-            Destroy(other.gameObject);  // Destruir el pick-up al ser recogido.      
+        // Verifica si el objeto tiene uno de los tags permitidos antes de destruirlo
+        if (tag == "PickUp" || tag == "OnEnemyZone" || tag == "PortalPts")
+        {
+            Destroy(other.gameObject);
+
             if (scoreManager != null)
             {
                 scoreManager.AumentarPuntos(tag); // Suma un punto
             }
         }
     }
+
 
     // Detectar las colisiones con los pick-ups
     private IEnumerator ApplyTemporaryBoost()

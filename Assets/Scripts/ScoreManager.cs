@@ -1,73 +1,92 @@
 using UnityEngine;
 using System; // Necesario para usar eventos
-using System.Collections;
 using TMPro;
 
 public class ScoreEventsManager : MonoBehaviour
 {
-    public static event Action<int> OnPuntuacionActualizada; // Evento que envía el puntaje actual
-    public static event Action OnPortalTrigger; // Evento cuando llega a 6 puntos
-    public static event Action OnEnemyDoor; // Evento cuando llega a 6 puntos
-    public static event Action OnEnemyZone; // Evento cuando llega a 6 puntos
+    /**
+    Prompt para ChatGPT
 
-    [SerializeField]
-    private GameObject door;
-    [SerializeField]
-    private GameObject enemyDoor;
-    [SerializeField]
-    private GameObject enemySecondDoor;
-    public TextMeshProUGUI portalText;
-    public TextMeshProUGUI enemyDoorText;
-    public TextMeshProUGUI enemyZoneText;
+    Quiero que el codigo pase tanto portalPts como enemyTrapDoorPts por evento para que luego playerController (suscrito a dichos eventos) 
+    pueda modificar su UI y que aparezcan ambas puntuaciones hasta que player recoja todos los puntos (portalPts y enemyTrapDoorPts), 
+    momento en el que se restablecería el puntaje anterior
+    */
+    // Eventos para actualizar la puntuación y activar acciones específicas
+    public static event Action<int> OnPuntuacionActualizada;
+    public static event Action OnPortalTrigger;
+    public static event Action<int> OnEnemyZone;
+    public static event Action<int> OnPortalPts;
+
+    [SerializeField] private GameObject door;
+    [SerializeField] private GameObject enemyEntryDoor;
+    [SerializeField] private GameObject enemyTrapDoor;
+
+    [SerializeField] private TextMeshProUGUI portalText;
+    [SerializeField] private TextMeshProUGUI enemyDoorText;
+    [SerializeField] private TextMeshProUGUI enemyTrapDoorText;
 
     private int puntuacion = 0; // Puntuación del jugador
-    private int portalPts = 7;
+    private int portalPts = 3;
     private int enemyDoorPts = 7;
+    private int enemyTrapDoorPts = 9;
 
-    void Start()
+    private const int puntosPorAccion = 1; // Puntos que se suman/restan en cada evento
+
+    private void Start()
     {
-        setText();
+        ActualizarUI();
     }
 
-    void Update()
+    private void Update()
     {
-        setText();
+        ActualizarUI();
     }
 
-    public void AumentarPuntos(String tipo)
+    /// <summary>
+    /// Aumenta puntos en función del tipo de objeto con el que colisiona.
+    /// </summary>
+    public void AumentarPuntos(string tipo)
     {
-        int puntos = 1; 
-
-        if (tipo == "PickUp")
+        switch (tipo)
         {
-            puntuacion += puntos;
-            enemyDoorPts -= puntos;
-        }
-        else if (tipo == "portal")
-        {
-            portalPts -= puntos;
-        }
+            case "PickUp":
+                puntuacion += puntosPorAccion;
+                enemyDoorPts -= puntosPorAccion;
+                OnPuntuacionActualizada?.Invoke(puntuacion);
+                Debug.Log($"Puntuación: {puntuacion}");
 
-        Debug.Log("Puntuación: " + puntuacion);
+                if (puntuacion > 6)
+                {
+                    enemyEntryDoor.GetComponent<Animator>().SetBool("isOpen", true);
+                }
+                break;
 
-        // Disparar el evento y enviar la puntuación actual
-        OnPuntuacionActualizada?.Invoke(puntuacion);
+            case "OnEnemyZone":
+                enemyTrapDoorPts -= puntosPorAccion;
+                enemyTrapDoor.GetComponent<Animator>().SetBool("isOpen", enemyTrapDoorPts > 0);
+                OnEnemyZone?.Invoke(enemyTrapDoorPts);
+                break;
 
-        if (puntuacion > 6)
-        {
-            OnEnemyDoor?.Invoke();
-            enemyDoor.GetComponent<Animator>().SetBool("isOpen", true);
-        }
-
-        if (portalPts == 0)
-        {
-            OnPortalTrigger?.Invoke();
-            door.GetComponent<Animator>().SetBool("isOpen", true);
+            case "PortalPts":
+                portalPts -= puntosPorAccion;
+                OnPortalPts?.Invoke(portalPts);
+                if (portalPts == 0)
+                {
+                    OnPortalTrigger?.Invoke();
+                    door.GetComponent<Animator>().SetBool("isOpen", true);
+                }
+                break;
         }
     }
 
-    void setText() 
+    /// <summary>
+    /// Actualiza los textos de la interfaz de usuario con los valores actuales.
+    /// </summary>
+    private void ActualizarUI()
     {
         portalText.text = portalPts.ToString();
+        enemyDoorText.text = enemyDoorPts.ToString();
+        enemyTrapDoorText.text = enemyTrapDoorPts.ToString();
     }
 }
+
