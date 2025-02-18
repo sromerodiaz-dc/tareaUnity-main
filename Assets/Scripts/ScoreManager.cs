@@ -1,21 +1,12 @@
-using UnityEngine;
-using System; // Necesario para usar eventos
+using System;
 using TMPro;
+using UnityEngine;
 
 public class ScoreEventsManager : MonoBehaviour
 {
-    /**
-    Prompt para ChatGPT
-
-    Quiero que el codigo pase tanto portalPts como enemyTrapDoorPts por evento para que luego playerController (suscrito a dichos eventos) 
-    pueda modificar su UI y que aparezcan ambas puntuaciones hasta que player recoja todos los puntos (portalPts y enemyTrapDoorPts), 
-    momento en el que se restablecería el puntaje anterior
-    */
-    // Eventos para actualizar la puntuación y activar acciones específicas
     public static event Action<int> OnPuntuacionActualizada;
     public static event Action OnPortalTrigger;
     public static event Action<int> OnEnemyZone;
-    public static event Action<int> OnPortalPts;
 
     [SerializeField] private GameObject door;
     [SerializeField] private GameObject enemyEntryDoor;
@@ -25,68 +16,88 @@ public class ScoreEventsManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI enemyDoorText;
     [SerializeField] private TextMeshProUGUI enemyTrapDoorText;
 
-    private int puntuacion = 0; // Puntuación del jugador
-    private int portalPts = 3;
-    private int enemyDoorPts = 7;
-    private int enemyTrapDoorPts = 9;
+    [SerializeField] private GameObject enemy;
+    [SerializeField] private Light playerLight;
 
-    private const int puntosPorAccion = 1; // Puntos que se suman/restan en cada evento
+    private int puntuacion = 0;
+    private int enemyDoorPts = 7;
+    private int enemyTrapDoorPts = 12;
+
+    private const int PUNTOS_POR_ACCION = 1;
+    private const int PUNTUACION_LIMITE = 6;
+
+    private Animator enemyEntryDoorAnimator;
+    private Animator enemyTrapDoorAnimator;
+    private Animator doorAnimator;
 
     private void Start()
     {
+        enemyEntryDoorAnimator = enemyEntryDoor.GetComponent<Animator>();
+        enemyTrapDoorAnimator = enemyTrapDoor.GetComponent<Animator>();
+        doorAnimator = door.GetComponent<Animator>();
+
+        if (playerLight == null)
+        {
+            playerLight = GameObject.FindWithTag("PlayerLight")?.GetComponent<Light>();
+            if (playerLight == null)
+            {
+                Debug.LogError("playerLight no fue encontrado. Asegúrate de que la luz está asignada en el Inspector o con la etiqueta correcta.");
+            }
+        }
+
         ActualizarUI();
+        enemy.SetActive(false);
     }
 
-    private void Update()
-    {
-        ActualizarUI();
-    }
-
-    /// <summary>
-    /// Aumenta puntos en función del tipo de objeto con el que colisiona.
-    /// </summary>
     public void AumentarPuntos(string tipo)
     {
-        switch (tipo)
+        puntuacion += PUNTOS_POR_ACCION;
+        OnPuntuacionActualizada?.Invoke(puntuacion);
+
+        if (tipo == "PickUp")
         {
-            case "PickUp":
-                puntuacion += puntosPorAccion;
-                enemyDoorPts -= puntosPorAccion;
-                OnPuntuacionActualizada?.Invoke(puntuacion);
-                Debug.Log($"Puntuación: {puntuacion}");
-
-                if (puntuacion > 6)
-                {
-                    enemyEntryDoor.GetComponent<Animator>().SetBool("isOpen", true);
-                }
-                break;
-
-            case "OnEnemyZone":
-                enemyTrapDoorPts -= puntosPorAccion;
-                enemyTrapDoor.GetComponent<Animator>().SetBool("isOpen", enemyTrapDoorPts > 0);
-                OnEnemyZone?.Invoke(enemyTrapDoorPts);
-                break;
-
-            case "PortalPts":
-                portalPts -= puntosPorAccion;
-                OnPortalPts?.Invoke(portalPts);
-                if (portalPts == 0)
-                {
-                    OnPortalTrigger?.Invoke();
-                    door.GetComponent<Animator>().SetBool("isOpen", true);
-                }
-                break;
+            enemyDoorPts -= PUNTOS_POR_ACCION;
+            if (puntuacion > PUNTUACION_LIMITE)
+            {
+                enemyEntryDoorAnimator.SetBool("isOpen", true);
+            }
         }
+        else if (tipo == "OnEnemyZone" || tipo == "PortalPts")
+        {
+            enemyTrapDoorPts -= PUNTOS_POR_ACCION;
+            enemyTrapDoorAnimator.SetBool("isOpen", enemyTrapDoorPts > 0);
+
+            if (enemyTrapDoorPts > 0)
+            {
+                if (!enemy.activeSelf)
+                {
+                    enemy.SetActive(true);
+                }
+
+                playerLight.range = 10f;
+            }
+            else
+            {
+                if (enemy.activeSelf)
+                {
+                    enemy.SetActive(false);
+                }
+
+                playerLight.range = 25f;
+            }
+
+            OnEnemyZone?.Invoke(enemyTrapDoorPts);
+            OnPortalTrigger?.Invoke();  // Si se está utilizando, sino eliminarlo
+            doorAnimator.SetBool("isOpen", true);
+        }
+
+        ActualizarUI();
     }
 
-    /// <summary>
-    /// Actualiza los textos de la interfaz de usuario con los valores actuales.
-    /// </summary>
     private void ActualizarUI()
     {
-        portalText.text = portalPts.ToString();
         enemyDoorText.text = enemyDoorPts.ToString();
         enemyTrapDoorText.text = enemyTrapDoorPts.ToString();
+        portalText.text = enemyTrapDoorPts.ToString(); // O actualiza según corresponda
     }
 }
-

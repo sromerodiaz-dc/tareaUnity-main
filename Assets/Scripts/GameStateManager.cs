@@ -8,6 +8,9 @@ public class GameStateManager : MonoBehaviour
     [SerializeField]
     private GameObject endPanel;
 
+    [SerializeField] GameObject panelPlayer;
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -23,6 +26,7 @@ public class GameStateManager : MonoBehaviour
     public void LoseGame()
     {
         endPanel.SetActive(true);
+        panelPlayer.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = "";
         endPanel.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = "Estás suspenso XD";
     }
 

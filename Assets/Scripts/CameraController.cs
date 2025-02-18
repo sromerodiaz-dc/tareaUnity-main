@@ -3,24 +3,23 @@ using UnityEngine.InputSystem;
 
 public class CameraController : MonoBehaviour, PlayerControls.IPlayerActions
 {
-    public GameObject player; // Referencia al jugador (la bola).
+    public GameObject player;
 
     private PlayerControls controls;
-    private Vector2 lookInput; // Entrada de rotación para la cámara.
-    private bool isFirstPerson = false; // Indica si está en modo primera persona.
+    private Vector2 lookInput;
+    private bool isFirstPerson = false;
+    private bool isForcedFirstPerson = false; // Nueva variable para el evento.
 
-    // Configuración para la vista en tercera persona.
-    public float thirdPersonHeight = 10f; // Altura de la cámara en tercera persona.
-    public float thirdPersonDistance = 10f; // Distancia de la cámara al jugador.
+    public float thirdPersonHeight = 10f;
+    public float thirdPersonDistance = 10f;
     private Vector3 thirdPersonOffset;
 
-    // Configuración para la vista en primera persona.
-    public float sensitivity = 1.0f; // Ajustable desde el Inspector
-    public float rotationSpeed = 50f; // Velocidad de rotación para la cámara en primera persona.
-    public float firstPersonHeightOffset = 0.5f; // Altura de la cámara en primera persona.
+    public float sensitivity = 1.0f;
+    public float rotationSpeed = 50f;
+    public float firstPersonHeightOffset = 0.5f;
 
-    private float rotationX = 0f; // Rotación acumulada en el eje vertical (primera persona).
-    private float rotationY = 0f; // Rotación acumulada en el eje horizontal (primera persona).
+    private float rotationX = 0f;
+    private float rotationY = 0f;
 
     private void Awake()
     {
@@ -31,32 +30,31 @@ public class CameraController : MonoBehaviour, PlayerControls.IPlayerActions
     private void OnEnable()
     {
         controls.Player.Enable();
+        ScoreEventsManager.OnEnemyZone += HandleEnemyZoneFirstPerson; // Suscribirse al evento
     }
 
     private void OnDisable()
     {
         controls.Player.Disable();
+        ScoreEventsManager.OnEnemyZone -= HandleEnemyZoneFirstPerson; // Desuscribirse del evento
     }
 
     private void Start()
     {
-        // Configurar el offset inicial para la vista en tercera persona.
         thirdPersonOffset = new Vector3(0, thirdPersonHeight, -thirdPersonDistance);
     }
 
     private void Update()
     {
-        // Alternar entre cámaras basado en las teclas numéricas del 1 al 9.
-        if (controls.Player.NumberKeys.triggered)
+        // Si el modo primera persona está forzado, ignorar cambios manuales
+        if (!isForcedFirstPerson && controls.Player.NumberKeys.triggered)
         {
-            // Verificar cuál tecla numérica fue presionada.
             var control = controls.Player.NumberKeys.activeControl;
             if (control != null)
             {
                 string keyPressed = control.displayName;
                 Debug.Log($"Tecla presionada: {keyPressed}");
 
-                // Alternar entre vistas según la tecla.
                 switch (keyPressed)
                 {
                     case "1":
@@ -65,7 +63,6 @@ public class CameraController : MonoBehaviour, PlayerControls.IPlayerActions
                     case "2":
                         isFirstPerson = true; // Cambiar a primera persona.
                         break;
-                        // Puedes agregar más casos aquí si lo necesitas.
                 }
             }
         }
@@ -73,42 +70,37 @@ public class CameraController : MonoBehaviour, PlayerControls.IPlayerActions
 
     private void LateUpdate()
     {
-        if (isFirstPerson)
+        if (isFirstPerson || isForcedFirstPerson)
         {
+            Debug.Log("Updating First Person View");
             UpdateFirstPersonView();
         }
         else
         {
+            Debug.Log("Updating Third Person View");
             UpdateThirdPersonView();
         }
     }
 
+
     private void UpdateThirdPersonView()
     {
-        // Posición deseada para la cámara en tercera persona.
         Vector3 desiredPosition = player.transform.position + thirdPersonOffset;
         transform.position = desiredPosition;
-
-        // Hacer que la cámara mire al jugador.
         transform.LookAt(player.transform.position);
     }
 
     private void UpdateFirstPersonView()
     {
-        // Actualizar posición de la cámara para la primera persona.
         transform.position = player.transform.position + Vector3.up * firstPersonHeightOffset;
 
-        // Aplicar rotación acumulada basada en la entrada y sensibilidad ajustable.
         float adjustedSensitivity = rotationSpeed * sensitivity;
         rotationX = Mathf.Clamp(rotationX - lookInput.y * adjustedSensitivity * Time.deltaTime, -90f, 90f);
         rotationY += lookInput.x * adjustedSensitivity * Time.deltaTime;
 
-        // Aplicar rotación final.
         transform.rotation = Quaternion.Euler(rotationX, rotationY, 0f);
     }
 
-
-    // Método llamado automáticamente cuando hay entrada en el mouse.
     public void OnLook(InputAction.CallbackContext context)
     {
         if (context.performed)
@@ -121,13 +113,24 @@ public class CameraController : MonoBehaviour, PlayerControls.IPlayerActions
         }
     }
 
-    public void OnMove(InputAction.CallbackContext context)
+    public void OnMove(InputAction.CallbackContext context) { }
+
+    public void OnNumberKeys(InputAction.CallbackContext context) { }
+
+    private void HandleEnemyZoneFirstPerson(int enemyTrapDoorPts)
     {
-        // Implementación vacía ya que no se utiliza movimiento aquí.
+        Debug.Log($"Enemy Zone Triggered - enemyTrapDoorPts: {enemyTrapDoorPts}");
+    
+        if (enemyTrapDoorPts > 0)
+        {
+            isForcedFirstPerson = true;
+            Debug.Log("Forced First Person: ON");
+        }
+        else
+        {
+            isForcedFirstPerson = false;
+            Debug.Log("Forced First Person: OFF");
+        }
     }
 
-    public void OnNumberKeys(InputAction.CallbackContext context)
-    {
-        //
-    }
 }
