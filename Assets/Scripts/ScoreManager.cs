@@ -41,7 +41,7 @@ public class ScoreEventsManager : MonoBehaviour
             playerLight = GameObject.FindWithTag("PlayerLight")?.GetComponent<Light>();
             if (playerLight == null)
             {
-                Debug.LogError("playerLight no fue encontrado. Asegúrate de que la luz está asignada en el Inspector o con la etiqueta correcta.");
+                Debug.LogError("playerLight no fue encontrado. Asegurate de que la luz esta asignada en el Inspector o con la etiqueta correcta.");
             }
         }
 
@@ -87,7 +87,7 @@ public class ScoreEventsManager : MonoBehaviour
             }
 
             OnEnemyZone?.Invoke(enemyTrapDoorPts);
-            OnPortalTrigger?.Invoke();  // Si se está utilizando, sino eliminarlo
+            OnPortalTrigger?.Invoke();  // Si se estï¿½ utilizando, sino eliminarlo
             doorAnimator.SetBool("isOpen", true);
         }
 
@@ -98,6 +98,6 @@ public class ScoreEventsManager : MonoBehaviour
     {
         enemyDoorText.text = enemyDoorPts.ToString();
         enemyTrapDoorText.text = enemyTrapDoorPts.ToString();
-        portalText.text = enemyTrapDoorPts.ToString(); // O actualiza según corresponda
+        portalText.text = enemyTrapDoorPts.ToString(); // O actualiza segï¿½n corresponda
     }
 }

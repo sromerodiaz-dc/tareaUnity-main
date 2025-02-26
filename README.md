@@ -230,7 +230,66 @@ else if (context.canceled)
 <details>
 <summary><b>Estructura del proyecto</b></summary>
 
-# Estructura del proyecto
+El proyecto emplea diferentes elementos como `prefabs`, `NavMesh Agents`, `assets` o `animaciones`, por ejemplo.
+Para que todo esto funcione en base a los eventos que son dados en base a lo que haga el jugador son necesarios 
+diferentes **scripts** que manejen cada una de las interacciones.
+
+Profundizaré en aquellos scripts que no hayan sido explicados y que sean importantes como por ejemplo: `ScoreManager.cs` o `EnemyController.cs`.
+
+![scripts](/.readmeassets/scriptsimage.png)
+
+La estructura del proyecto en Unity vendría siendo la siguiente:
+
+![scripts](/.readmeassets/estructura.png)
+
+# `CONTROLLERS`
+
+## GameManager
+
+El **GameManager** es el encargado de llevar los principales eventos del juego como por ejemplo, la apertura del primer portal, la habilitación de los primeros enemigos, etc.
+
+Es un GameObject al cual se le adhieren diferentes scripts:
+
+![gamemanager](.readmeassets/gamemanagerinspector.png)
+
+De todos estos cabe destacar la funcionalidad de ScoreEventsManager o ScoreManager.cs
+
+### Eventos
+El script define tres eventos estáticos para manejar cambios en la puntuación y eventos en el juego:
+- `OnPuntuacionActualizada(int puntuacion)`: Se invoca cuando la puntuación cambia.
+- `OnPortalTrigger()`: Se dispara al activar un portal.
+- `OnEnemyZone(int enemyTrapDoorPts)`: Se invoca cuando el jugador entra en una zona de enemigos.
+
+### Variables SerializeField
+Las siguientes variables se exponen en el Inspector de Unity para asignar objetos de la escena:
+- `door`, `enemyEntryDoor`, `enemyTrapDoor`: Referencias a las puertas animadas.
+- `portalText`, `enemyDoorText`, `enemyTrapDoorText`: Referencias a textos de UI para mostrar puntuaciones.
+- `enemy`: Referencia al enemigo en la escena.
+- `playerLight`: Referencia a la luz del jugador.
+
+### Constantes y Variables Internas
+- `puntuacion`: Almacena la puntuación actual.
+- `enemyDoorPts`, `enemyTrapDoorPts`: Puntos necesarios para abrir puertas.
+- `PUNTOS_POR_ACCION`: Incremento de puntuación por acción.
+- `PUNTUACION_LIMITE`: Límite para abrir la puerta de entrada de enemigos.
+- `enemyEntryDoorAnimator`, `enemyTrapDoorAnimator`, `doorAnimator`: Referencias a los `Animator` de las puertas.
+
+### Métodos
+
+### `Start()`
+- Inicializa referencias a `Animator` y `playerLight`.
+- Verifica que `playerLight` esté asignado, si no, intenta encontrarlo por etiqueta.
+- Inicializa la UI y desactiva el enemigo.
+
+### `AumentarPuntos(string tipo)`
+- Incrementa la puntuación y emite el evento `OnPuntuacionActualizada`.
+- Dependiendo del `tipo` de acción:
+  - **"PickUp"**: Reduce puntos necesarios para abrir la puerta de entrada de enemigos.
+  - **"OnEnemyZone" o "PortalPts"**: Maneja la apertura de la trampa de enemigos y la activación de la luz y el enemigo.
+- Actualiza la UI.
+
+### `ActualizarUI()`
+- Refresca los textos de UI con los valores actuales de puntuación y puertas.
 
 Implementar PREFABS, ENEMIGOS (NAVMESH) Y TEXTURAS (ASSETS).
 Implementar ANIMATOR para los GAME STATES.
@@ -265,3 +324,8 @@ Game States (Script y Animator), Score Manager, Portal Trigger (Animaciones) y G
 ## `Game Manager`
 
 </details>
+
+
+
+
+
