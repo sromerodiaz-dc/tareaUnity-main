@@ -87,7 +87,7 @@ public class ScoreEventsManager : MonoBehaviour
             }
 
             OnEnemyZone?.Invoke(enemyTrapDoorPts);
-            OnPortalTrigger?.Invoke();  // Si se est� utilizando, sino eliminarlo
+            OnPortalTrigger?.Invoke();  
             doorAnimator.SetBool("isOpen", true);
         }
 

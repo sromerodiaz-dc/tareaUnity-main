@@ -236,11 +236,11 @@ diferentes **scripts** que manejen cada una de las interacciones.
 
 Profundizaré en aquellos scripts que no hayan sido explicados y que sean importantes como por ejemplo: `ScoreManager.cs` o `EnemyController.cs`.
 
-![scripts](/.readmeassets/scriptsimage.png)
+![scripts](.readmeassets/scriptsimage.png)
 
 La estructura del proyecto en Unity vendría siendo la siguiente:
 
-![scripts](/.readmeassets/estructura.png)
+![scripts](.readmeassets/estructura.png)
 
 # `CONTROLLERS`
 
@@ -253,6 +253,10 @@ Es un GameObject al cual se le adhieren diferentes scripts:
 ![gamemanager](.readmeassets/gamemanagerinspector.png)
 
 De todos estos cabe destacar la funcionalidad de ScoreEventsManager o ScoreManager.cs
+
+![gamemanager](.readmeassets/scoremanageratributos.png)
+
+![gamemanager](.readmeassets/scoremanagermainmethod.png)
 
 ### Eventos
 El script define tres eventos estáticos para manejar cambios en la puntuación y eventos en el juego:
@@ -291,39 +295,69 @@ Las siguientes variables se exponen en el Inspector de Unity para asignar objeto
 ### `ActualizarUI()`
 - Refresca los textos de UI con los valores actuales de puntuación y puertas.
 
-Implementar PREFABS, ENEMIGOS (NAVMESH) Y TEXTURAS (ASSETS).
-Implementar ANIMATOR para los GAME STATES.
+Cuando el primer punto de la zona enemiga es recogido se activan los enemigos:
 
+![enemygif](.readmeassets/enemygif-ezgif.com-video-to-gif-converter.gif)
 </details>
+
 <details>
 <summary><b>Entidades</b></summary>
 
+Las entidades son todo grupo de GameObjects interactuables del juego:
+
+![entities](.readmeassets/entitiesinspector.png)
+
+Dentro de esta familia de objetos, los más destacables son los enemigos por emplear IA para su propio movimiento y por determinar un nivel entero del juego.
+
 ## `Enemigos`
 
+Ambos enemigos contienen los siguientes elementos en el inspector:
+
+![enemies](.readmeassets/enemyinspector.png)
+
+NavMesh Agent se encarga de hacer que los objetos a los que se adhiere este componente tengan una superficie sobre la que actuar. Esta superficie se logra gracias a otro componente impuesto, en este caso, sobre un objeto padre que contiene el suelo y todos los obstaculos del nivel para así mapearlo y darle funcionalidad al NavMesh Agent.
+
+Hay otro componente en el objeto **EnemyController**:
+
+![enemycontroller](.readmeassets/enemycontrollercode.png)
+
+![enemycontroller](.readmeassets/enemyontrigger.png)
+
+## Características
+- Utiliza `NavMeshAgent` para moverse hacia el jugador.
+- Controla su velocidad de persecución.
+- Detecta colisiones con el jugador y activa la función de derrota.
+- Maneja errores si el `NavMeshAgent` está deshabilitado.
+
+## Variables
+- `player`: Referencia al jugador.
+- `speed`: Intervalo de actualización del movimiento.
+- `manager`: Referencia al `GameStateManager` para manejar la derrota.
+- `Agent`: Componente `NavMeshAgent` del enemigo.
+
+## Métodos
+### `Awake()`
+Inicializa el `NavMeshAgent`.
+
+### `OnEnable()`
+- Muestra un mensaje en consola.
+- Inicia la rutina de seguimiento (`Follow`).
+
+### `Follow()`
+- Ejecuta un bucle donde el enemigo se mueve constantemente hacia el jugador.
+- Maneja casos donde el `NavMeshAgent` está deshabilitado.
+
+### `OnTriggerEnter(Collider other)`
+- Si el enemigo colisiona con el jugador, lo desactiva y llama `LoseGame()` en `GameStateManager`.
+
+![enemycontroller](.readmeassets/gamestatescode.png)
+
+Cuando un enemigo te toca, se activa el trigger:
+
+![enemycontroller](.readmeassets/endpanel.gif)
 </details>
 <details>
-<summary><b>Estructuras moviles</b></summary>
 
-## `Portal / Teletransporte`
-
-He implementado dos portales que muestran lo que hay del otro lado del portal. Para esto he tenido que crear: 2 cámaras, 2 colliders, 2 renders textures y 2 materiales.
-
-He hecho uso de diferentes scripts, uno que controla el movimiento de las cámaras para cuadrarlo con la cámara del jugador y por último, otro script que controle el teletransporte de un lugar a otro.
-
-Para que funcione mejor, hay que implementar un shader.
-
-
-</details>
-<details>
-<summary><b>Controladores</b></summary>
-
-Game States (Script y Animator), Score Manager, Portal Trigger (Animaciones) y GameManager (GameObject)
-
-## `Game States`
-
-## `Game Manager`
-
-</details>
 
 
 

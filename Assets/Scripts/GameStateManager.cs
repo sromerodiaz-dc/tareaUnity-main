@@ -27,7 +27,7 @@ public class GameStateManager : MonoBehaviour
     {
         endPanel.SetActive(true);
         panelPlayer.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = "";
-        endPanel.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = "Estás suspenso XD";
+        endPanel.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = "Estas suspenso XD";
     }
 
     public void WinGame()
@@ -36,3 +36,4 @@ public class GameStateManager : MonoBehaviour
         endPanel.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = "You Win";
     }
 }
+
