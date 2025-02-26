@@ -356,7 +356,6 @@ Cuando un enemigo te toca, se activa el trigger:
 
 ![enemycontroller](.readmeassets/endpanel.gif)
 </details>
-<details>
 
 
 
